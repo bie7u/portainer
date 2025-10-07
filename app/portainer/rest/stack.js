@@ -21,6 +21,8 @@ function StackFactory($resource, API_ENDPOINT_STACKS) {
       stop: { method: 'POST', params: { id: '@id', action: 'stop', endpointId: '@endpointId' } },
       updateGit: { method: 'PUT', params: { id: '@id', action: 'git', subaction: 'redeploy' } },
       updateGitStackSettings: { method: 'POST', params: { id: '@id', action: 'git' }, ignoreLoadingBar: true },
+      switchBranch: { method: 'POST', params: { id: '@id', action: 'switch-branch' } },
+      getGitBranches: { method: 'GET', params: { id: '@id', action: 'git', subaction: 'branches' } },
     }
   );
 }

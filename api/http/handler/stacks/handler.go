@@ -77,6 +77,10 @@ func NewHandler(bouncer security.BouncerService) *Handler {
 		bouncer.AuthenticatedAccess(httperror.LoggerHandler(h.stackUpdateGit))).Methods(http.MethodPost)
 	h.Handle("/stacks/{id}/git/redeploy",
 		bouncer.AuthenticatedAccess(httperror.LoggerHandler(h.stackGitRedeploy))).Methods(http.MethodPut)
+	h.Handle("/stacks/{id}/git/branches",
+		bouncer.AuthenticatedAccess(httperror.LoggerHandler(h.stackGitBranches))).Methods(http.MethodGet)
+	h.Handle("/stacks/{id}/switch-branch",
+		bouncer.AuthenticatedAccess(httperror.LoggerHandler(h.stackSwitchBranch))).Methods(http.MethodPost)
 	h.Handle("/stacks/{id}/file",
 		bouncer.AuthenticatedAccess(httperror.LoggerHandler(h.stackFile))).Methods(http.MethodGet)
 	h.Handle("/stacks/{id}/migrate",

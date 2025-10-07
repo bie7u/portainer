@@ -17,6 +17,8 @@ angular.module('portainer.app').factory('StackService', [
     var service = {
       updateGit,
       updateKubeGit,
+      switchBranch,
+      getGitBranches,
     };
 
     service.stack = function (id) {
@@ -480,6 +482,14 @@ angular.module('portainer.app').factory('StackService', [
           TLSSkipVerify: gitConfig.TLSSkipVerify,
         }
       ).$promise;
+    };
+
+    service.switchBranch = function (id, branch) {
+      return Stack.switchBranch({ id }, { branch }).$promise;
+    };
+
+    service.getGitBranches = function (id) {
+      return Stack.getGitBranches({ id }).$promise;
     };
 
     return service;

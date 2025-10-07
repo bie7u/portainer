@@ -9,6 +9,48 @@
     additional-files="$ctrl.stack.AdditionalFiles"
   ></git-form-info-panel>
 
+  <!-- Branch Selector -->
+  <div class="form-group" ng-if="$ctrl.state.branches.length > 0">
+    <div class="col-sm-12">
+      <label class="control-label text-left">
+        Switch to different branch
+      </label>
+      <div class="input-group">
+        <select 
+          class="form-control" 
+          ng-model="$ctrl.selectedBranch"
+          ng-disabled="$ctrl.state.branchSwitching || $ctrl.state.branchesLoading"
+        >
+          <option value="">-- Select a branch to switch --</option>
+          <option 
+            ng-repeat="branch in $ctrl.state.branches" 
+            value="{{ branch }}"
+            ng-disabled="branch === $ctrl.formValues.RefName"
+          >
+            {{ branch }}{{ branch === $ctrl.formValues.RefName ? ' (current)' : '' }}
+          </option>
+        </select>
+        <span class="input-group-btn">
+          <button 
+            class="btn btn-primary"
+            ng-click="$ctrl.switchBranch($ctrl.selectedBranch)"
+            ng-disabled="!$ctrl.selectedBranch || $ctrl.state.branchSwitching || $ctrl.state.branchesLoading"
+            button-spinner="$ctrl.state.branchSwitching"
+          >
+            <pr-icon ng-if="!$ctrl.state.branchSwitching" icon="'git-branch'" class-name="'!mr-1'"></pr-icon>
+            <span ng-hide="$ctrl.state.branchSwitching">Switch Branch</span>
+            <span ng-show="$ctrl.state.branchSwitching">Switching...</span>
+          </button>
+        </span>
+      </div>
+      <p class="small text-muted" style="margin-top: 5px;">
+        <pr-icon icon="'info'" class-name="'mr-1'"></pr-icon>
+        Switching branches will redeploy the stack from the selected branch. Current branch: <strong>{{ $ctrl.formValues.RefName || 'default' }}</strong>
+      </p>
+    </div>
+  </div>
+  <!-- /Branch Selector -->
+
   <git-form-auto-update-fieldset
     value="$ctrl.formValues.AutoUpdate"
     on-change="($ctrl.onChangeAutoUpdate)"

@@ -1,6 +1,8 @@
 import { RepositoryMechanismTypes } from 'Kubernetes/models/deploy';
 import { FeatureId } from '@/react/portainer/feature-flags/enums';
 import { confirmStackUpdate } from '@/react/common/stacks/common/confirm-stack-update';
+import { confirm } from '@@/modals/confirm';
+import { buildConfirmButton } from '@@/modals/utils';
 
 import { parseAutoUpdateResponse } from '@/react/portainer/gitops/AutoUpdateFieldset/utils';
 import { baseStackWebhookUrl, createWebhookId } from '@/portainer/helpers/webhookHelper';
@@ -34,6 +36,9 @@ class StackRedeployGitFormController {
       hasUnsavedChanges: false,
       baseWebhookUrl: baseStackWebhookUrl(),
       webhookId: createWebhookId(),
+      branches: [],
+      branchesLoading: false,
+      branchSwitching: false,
     };
 
     this.formValues = {
@@ -57,6 +62,8 @@ class StackRedeployGitFormController {
     this.onChangeOption = this.onChangeOption.bind(this);
     this.onChangeGitAuth = this.onChangeGitAuth.bind(this);
     this.onChangeTLSSkipVerify = this.onChangeTLSSkipVerify.bind(this);
+    this.loadBranches = this.loadBranches.bind(this);
+    this.switchBranch = this.switchBranch.bind(this);
   }
 
   buildAnalyticsProperties() {
@@ -210,6 +217,46 @@ class StackRedeployGitFormController {
     });
   }
 
+  async loadBranches() {
+    return this.$async(async () => {
+      try {
+        this.state.branchesLoading = true;
+        const response = await this.StackService.getGitBranches(this.stack.Id);
+        this.state.branches = response.branches || [];
+      } catch (err) {
+        this.Notifications.error('Failure', err, 'Unable to load git branches');
+      } finally {
+        this.state.branchesLoading = false;
+      }
+    });
+  }
+
+  async switchBranch(branch) {
+    return this.$async(async () => {
+      try {
+        const confirmed = await confirm({
+          title: 'Are you sure?',
+          message: `Switching to branch "${branch}" will redeploy the stack from that branch. Any changes to this stack will be overridden. Do you wish to continue?`,
+          confirmButton: buildConfirmButton('Switch Branch', 'warning'),
+          modalType: 'warn',
+        });
+        
+        if (!confirmed) {
+          return;
+        }
+
+        this.state.branchSwitching = true;
+        await this.StackService.switchBranch(this.stack.Id, branch);
+        this.Notifications.success('Success', `Stack switched to branch "${branch}" and redeployed successfully`);
+        this.$state.reload();
+      } catch (err) {
+        this.Notifications.error('Failure', err, 'Unable to switch branch');
+      } finally {
+        this.state.branchSwitching = false;
+      }
+    });
+  }
+
   async $onInit() {
     this.formValues.RefName = this.model.ReferenceName;
     this.formValues.TLSSkipVerify = this.model.TLSSkipVerify;
@@ -234,6 +281,9 @@ class StackRedeployGitFormController {
     }
 
     this.savedFormValues = angular.copy(this.formValues);
+    
+    // Load available branches
+    await this.loadBranches();
   }
 }
 
