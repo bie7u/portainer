@@ -111,6 +111,71 @@ You can customize the following settings:
 - `PORTAINER_PROJECT`: The root dir of the repository - `${portainerRoot}/dist/` is imported into the container to get the build artifacts and external tools (defaults to `your current dir`).
 - `PORTAINER_FLAGS`: a list of flags to be used on the portainer commandline, in the form `--admin-password=<pwd hash> --feat fdo=false --feat open-amt` (default: `""`).
 
+## Running your custom code in Docker
+
+If you want to build and run your custom Portainer code in a Docker container (similar to running the official `portainer/portainer-ce:latest` image), follow these steps:
+
+### Build a custom Docker image
+
+First, build the Portainer image with your changes:
+
+```sh
+make build-image
+```
+
+This will create a Docker image tagged as `portainerci/portainer-ce:local`.
+
+You can also specify a custom tag:
+
+```sh
+make build-image TAG=my-custom-tag
+```
+
+### Run your custom Docker image
+
+Once the image is built, you can run it just like the official Portainer CE image:
+
+```sh
+docker run -d \
+  -p 9000:9000 \
+  -p 9443:9443 \
+  --name portainer \
+  --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v portainer_data:/data \
+  portainerci/portainer-ce:local
+```
+
+Replace `portainerci/portainer-ce:local` with your custom tag if you used a different one.
+
+**Note:** If you already have a Portainer container running with the name `portainer`, you'll need to remove it first:
+
+```sh
+docker rm -f portainer
+```
+
+### Quick rebuild and restart
+
+When you make changes to the code and want to rebuild and restart quickly:
+
+```sh
+# Stop and remove the existing container
+docker rm -f portainer
+
+# Rebuild the image
+make build-image
+
+# Run the new image
+docker run -d \
+  -p 9000:9000 \
+  -p 9443:9443 \
+  --name portainer \
+  --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v portainer_data:/data \
+  portainerci/portainer-ce:local
+```
+
 ## Testing your build
 
 The `--log-level=DEBUG` flag can be passed to the Portainer container in order to provide additional debug output which may be useful when troubleshooting your builds. Please note that this flag was originally intended for internal use and as such the format, functionality and output may change between releases without warning.
