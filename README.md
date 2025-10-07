@@ -44,6 +44,29 @@ You can join the Portainer Community by visiting [https://www.portainer.io/join-
 - Want to report a bug or request a feature? Please open [an issue](https://github.com/portainer/portainer/issues/new).
 - Want to help us build **_portainer_**? Follow our [contribution guidelines](https://docs.portainer.io/contribute/contribute) to build it locally and make a pull request.
 
+## Development
+
+### Running custom code in Docker
+
+If you want to build and run your own modified version of Portainer:
+
+```sh
+# Build the custom Docker image
+make build-image
+
+# Run your custom image (similar to running portainer/portainer-ce:latest)
+docker run -d \
+  -p 9000:9000 \
+  -p 9443:9443 \
+  --name portainer \
+  --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v portainer_data:/data \
+  portainerci/portainer-ce:local
+```
+
+For more details, see the [contribution guidelines](CONTRIBUTING.md#running-your-custom-code-in-docker).
+
 ## Security
 
 - Here at Portainer, we believe in [responsible disclosure](https://en.wikipedia.org/wiki/Responsible_disclosure) of security issues. If you have found a security issue, please report it to <security@portainer.io>.
