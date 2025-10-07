@@ -24,6 +24,70 @@ Portainer CE is updated regularly. We aim to do an update release every couple o
 - [Documentation](https://docs.portainer.io)
 - [Contribute to the project](https://docs.portainer.io/contribute/contribute)
 
+## Deployment
+
+### Quick Start - Running on a VPS with Docker
+
+Deploy Portainer on your VPS in minutes with Docker:
+
+```bash
+# Create a volume for data persistence
+docker volume create portainer_data
+
+# Run Portainer
+docker run -d \
+  -p 9000:9000 \
+  -p 9443:9443 \
+  --name portainer \
+  --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v portainer_data:/data \
+  portainer/portainer-ce:latest
+```
+
+Then access Portainer at `https://your-vps-ip:9443` or `http://your-vps-ip:9000`
+
+### Comprehensive Deployment Guides
+
+- **[VPS Deployment Guide](docs/VPS_DEPLOYMENT_GUIDE.md)** - Complete guide for deploying on a VPS including:
+  - System setup and Docker installation
+  - Building from source
+  - SSL/TLS configuration with Let's Encrypt
+  - Firewall setup
+  - Maintenance and backup procedures
+  
+- **[Quick Reference](docs/QUICK_REFERENCE.md)** - Quick commands and common operations
+
+- **[Contributing Guide](CONTRIBUTING.md)** - For local development and testing
+
+### Alternative Deployment Methods
+
+**Using Docker Compose:**
+
+Create `docker-compose.yml`:
+```yaml
+version: '3.8'
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+volumes:
+  portainer_data:
+```
+
+Then run: `docker-compose up -d`
+
+**For development:** See [CONTRIBUTING.md](CONTRIBUTING.md) for building and running locally.
+
 ## Features & Functions
 
 View [this](https://www.portainer.io/features) table to see all of the Portainer CE functionality and compare to Portainer Business.
