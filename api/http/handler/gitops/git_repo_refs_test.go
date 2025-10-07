@@ -74,6 +74,29 @@ func Test_gitOperationRepoRefs(t *testing.T) {
 		assert.Contains(t, refs, "refs/tags/v1.0.0")
 	})
 
+	t.Run("Returns refs with GitHub token authentication", func(t *testing.T) {
+		payload := repositoryRefsPayload{
+			Repository:        "https://github.com/portainer/portainer",
+			Username:          "", // Can be empty for token auth
+			Password:          "ghp_xxxxxxxxxxxxxxxxxxxx", // GitHub Personal Access Token
+			AuthorizationType: gittypes.GitCredentialAuthType_Token,
+			TLSSkipVerify:     false,
+		}
+
+		body, _ := json.Marshal(payload)
+		req := httptest.NewRequest(http.MethodPost, "/gitops/repo/refs", bytes.NewReader(body))
+		rec := httptest.NewRecorder()
+
+		handler.ServeHTTP(rec, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+
+		var refs []string
+		err := json.NewDecoder(rec.Body).Decode(&refs)
+		assert.NoError(t, err)
+		assert.Len(t, refs, 3)
+	})
+
 	t.Run("Returns error with invalid URL", func(t *testing.T) {
 		payload := repositoryRefsPayload{
 			Repository:    "",
