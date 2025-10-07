@@ -20,7 +20,8 @@ Portainer CE is updated regularly. We aim to do an update release every couple o
 
 ## Getting started
 
-- [Deploy Portainer on VPS with Docker Compose](./DEPLOYMENT.md) - Quick deployment guide for VPS
+- [Quick Start Guide](./QUICKSTART.md) - Deploy Portainer on your VPS in 5 minutes
+- [Docker Compose Deployment Guide](./DEPLOYMENT.md) - Comprehensive deployment guide for VPS
 - [Deploy Portainer](https://docs.portainer.io/start/install-ce) - Official installation guide
 - [Documentation](https://docs.portainer.io)
 - [Contribute to the project](https://docs.portainer.io/contribute/contribute)
