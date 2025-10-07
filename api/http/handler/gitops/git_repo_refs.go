@@ -18,6 +18,8 @@ type repositoryRefsPayload struct {
 	AuthorizationType gittypes.GitCredentialAuthType `json:"authorizationType"`
 	// TLSSkipVerify skips SSL verification when cloning the Git repository
 	TLSSkipVerify bool `example:"false"`
+	// Note: For GitHub token authentication, use AuthorizationType_Basic (0) or AuthorizationType_Token (1)
+	// with the token in the Password field. For Basic auth with token, Username can be empty or "token".
 }
 
 func (payload *repositoryRefsPayload) Validate(r *http.Request) error {
