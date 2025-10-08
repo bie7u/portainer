@@ -2,13 +2,9 @@ import { PropsWithChildren, ReactNode } from 'react';
 import { SchemaOf, string } from 'yup';
 
 import { StackId } from '@/react/common/stacks/types';
-import { useStateWrapper } from '@/react/hooks/useStateWrapper';
 
 import { FormControl } from '@@/form-components/FormControl';
-import { Input } from '@@/form-components/Input';
 import { TextTip } from '@@/Tip/TextTip';
-
-import { isBE } from '../../feature-flags/feature-flags.service';
 
 import { RefSelector } from './RefSelector';
 import { RefFieldModel } from './types';
@@ -32,9 +28,8 @@ export function RefField({
   stackId,
   createdFromCustomTemplateId,
 }: Props) {
-  const [inputValue, updateInputValue] = useStateWrapper(value, onChange);
   const inputId = 'repository-reference-field';
-  return isBE ? (
+  return (
     <Wrapper
       inputId={inputId}
       errors={error}
@@ -54,28 +49,6 @@ export function RefField({
         isUrlValid={isUrlValid}
         stackId={stackId}
         createdFromCustomTemplateId={createdFromCustomTemplateId}
-      />
-    </Wrapper>
-  ) : (
-    <Wrapper
-      inputId={inputId}
-      errors={error}
-      tip={
-        <>
-          Specify a reference of the repository using the following syntax:
-          branches with <code>refs/heads/branch_name</code> or tags with{' '}
-          <code>refs/tags/tag_name</code>. If not specified, will use the
-          default <code>HEAD</code> reference normally the <code>main</code>{' '}
-          branch.
-        </>
-      }
-    >
-      <Input
-        id={inputId}
-        data-cy="repository-reference-input"
-        value={inputValue}
-        onChange={(e) => updateInputValue(e.target.value)}
-        placeholder="refs/heads/main"
       />
     </Wrapper>
   );
@@ -107,10 +80,5 @@ function Wrapper({
 }
 
 export function refFieldValidation(): SchemaOf<string> {
-  return string()
-    .when({
-      is: isBE,
-      then: string().required('Repository reference name is required'),
-    })
-    .default('');
+  return string().required('Repository reference name is required').default('');
 }
