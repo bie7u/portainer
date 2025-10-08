@@ -30,5 +30,8 @@ func NewHandler(bouncer security.BouncerService, dataStore dataservices.DataStor
 	h.Handle("/gitops/repo/file/preview",
 		bouncer.AuthenticatedAccess(httperror.LoggerHandler(h.gitOperationRepoFilePreview))).Methods(http.MethodPost)
 
+	h.Handle("/gitops/repo/refs",
+		bouncer.AuthenticatedAccess(httperror.LoggerHandler(h.gitOperationRepoRefs))).Methods(http.MethodPost)
+
 	return h
 }
